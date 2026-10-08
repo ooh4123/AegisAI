@@ -1,0 +1,2851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AegisAI Security Console</title>
+
+
+    <script>
+        (function () {
+            const savedTheme =
+                localStorage.getItem("aegis-theme")
+                || "system";
+
+            const systemDark =
+                window.matchMedia
+                && window.matchMedia(
+                    "(prefers-color-scheme: dark)"
+                ).matches;
+
+            const resolvedTheme =
+                savedTheme === "system"
+                    ? (systemDark ? "dark" : "light")
+                    : savedTheme;
+
+            document.documentElement.dataset.theme =
+                resolvedTheme;
+
+            document.documentElement.dataset.themePreference =
+                savedTheme;
+        })();
+    </script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f4f7fc;
+            color: #0f1f3d;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .page {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 28px 24px 60px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1459ff;
+        }
+
+        .logout {
+            border: none;
+            background: #fff0f0;
+            color: #d62828;
+            padding: 11px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+        }
+
+        .hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    #172a4d,
+                    #314a78
+                );
+
+            color: white;
+            padding: 34px 30px;
+            border-radius: 26px;
+            box-shadow:
+                0 14px 35px
+                rgba(15, 31, 61, 0.13);
+        }
+
+        .hero h1 {
+            margin: 0 0 12px;
+            font-size: 31px;
+        }
+
+        .hero p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 22px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            border: none;
+            padding: 11px 19px;
+            border-radius: 13px;
+            background: white;
+            color: #52607a;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #1459ff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow:
+                0 12px 32px
+                rgba(15, 31, 61, 0.07);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 8px;
+        }
+
+        .section-subtitle {
+            color: #78849a;
+            margin-bottom: 22px;
+            font-size: 14px;
+        }
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(260px, 1fr)
+                );
+            gap: 16px;
+        }
+
+        .employee-card {
+            border: 1px solid #e4eaf4;
+            border-radius: 20px;
+            padding: 18px;
+            background: #fbfcff;
+        }
+
+        .employee-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .employee-name {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .employee-title {
+            font-size: 13px;
+            color: #768198;
+            margin-top: 3px;
+        }
+
+        .status {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 7px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #ebf9ef;
+            color: #15803d;
+        }
+
+        .status-send {
+            background: #fff8e7;
+            color: #a16207;
+        }
+
+        .status-all {
+            background: #ffecec;
+            color: #c62828;
+        }
+
+        .meta {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .chip {
+            background: #edf2f9;
+            border-radius: 9px;
+            padding: 6px 9px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .employee-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 11px;
+            padding: 9px 11px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .btn-send {
+            background: #fff5d9;
+            color: #9a6700;
+        }
+
+        .btn-all {
+            background: #ffe8e8;
+            color: #c92a2a;
+        }
+
+        .btn-restore {
+            background: #e8f4ff;
+            color: #1459ff;
+        }
+
+        .review-stats,
+        .audit-stats {
+            display: grid;
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(0, 1fr)
+                );
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 19px;
+            padding: 18px;
+            box-shadow:
+                0 9px 24px
+                rgba(15, 31, 61, 0.06);
+        }
+
+        .stat-label {
+            color: #8090aa;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: 900;
+            margin-top: 7px;
+        }
+
+        .review-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .review-card {
+            background: #fffdf6;
+            border: 1px solid #f2df9b;
+            border-radius: 20px;
+            padding: 19px;
+        }
+
+        .review-card.approved {
+            background: #f2fbf5;
+            border-color: #ccebd5;
+        }
+
+        .review-card.denied {
+            background: #fff2f2;
+            border-color: #f1caca;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .review-user {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .review-status {
+            font-size: 11px;
+            font-weight: 900;
+            padding: 7px 10px;
+            border-radius: 999px;
+        }
+
+        .pending {
+            background: #fff0bd;
+            color: #8a6200;
+        }
+
+        .approved-badge {
+            background: #ddf8e5;
+            color: #16733b;
+        }
+
+        .denied-badge {
+            background: #ffdede;
+            color: #b61f1f;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(150px, 1fr)
+                );
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .review-box {
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.8
+                );
+            padding: 11px;
+            border-radius: 12px;
+        }
+
+        .review-box span {
+            display: block;
+            font-size: 10px;
+            color: #7d8798;
+            margin-bottom: 4px;
+        }
+
+        .review-box strong {
+            font-size: 13px;
+        }
+
+        .review-reason {
+            margin-top: 12px;
+            padding: 12px;
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.72
+                );
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 9px;
+            margin-top: 14px;
+        }
+
+        .approve-btn {
+            border: none;
+            border-radius: 11px;
+            padding: 10px 15px;
+            background: #e3f7e9;
+            color: #17733c;
+            font-weight: 800;
+        }
+
+        .deny-btn {
+            border: none;
+            border-radius: 11px;
+            padding: 10px 15px;
+            background: #ffe4e4;
+            color: #bd2828;
+            font-weight: 800;
+        }
+
+        .audit-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 12px;
+        }
+
+        th {
+            color: #76839a;
+            font-size: 11px;
+        }
+
+        .decision {
+            font-weight: 900;
+        }
+
+        .allow {
+            color: #198754;
+        }
+
+        .block {
+            color: #d22b2b;
+        }
+
+        .review {
+            color: #b7791f;
+        }
+
+        .admin {
+            color: #1459ff;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 34px;
+            color: #8b95a8;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background:
+                rgba(
+                    15,
+                    25,
+                    45,
+                    0.35
+                );
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: min(
+                520px,
+                100%
+            );
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow:
+                0 25px 60px
+                rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h2 {
+            margin-top: 0;
+        }
+
+        .modal textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid #dce3ef;
+            border-radius: 15px;
+            padding: 13px;
+            resize: vertical;
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            border: none;
+            border-radius: 12px;
+            padding: 11px;
+            font-weight: 800;
+        }
+
+        .cancel-btn {
+            background: #eef1f6;
+            color: #35415a;
+        }
+
+        .confirm-btn {
+            background: #1459ff;
+            color: white;
+        }
+
+        .confirm-danger {
+            background: #d92c2c;
+            color: white;
+        }
+
+        @media (
+            max-width: 760px
+        ) {
+
+            .page {
+                padding:
+                    18px 14px 40px;
+            }
+
+            .hero {
+                padding: 25px 20px;
+            }
+
+            .hero h1 {
+                font-size: 25px;
+            }
+
+            .review-stats,
+            .audit-stats {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+            }
+
+        }
+
+
+        /* ================================================= */
+        /* APPEARANCE SWITCHER                               */
+        /* ================================================= */
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-select {
+            appearance: none;
+            -webkit-appearance: none;
+            border: 1px solid #dfe6f1;
+            background-color: white;
+            color: #0f1f3d;
+            padding: 10px 34px 10px 13px;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            outline: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, #7d89a1 50%),
+                linear-gradient(135deg, #7d89a1 50%, transparent 50%);
+            background-position:
+                calc(100% - 17px) 50%,
+                calc(100% - 12px) 50%;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            transition: .2s ease;
+        }
+
+        .theme-select:hover {
+            transform: translateY(-1px);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+        }
+
+        html[data-theme="dark"] body {
+            background: #0d1117;
+            color: #f4f7fb;
+        }
+
+        html[data-theme="dark"] .section-card,
+        html[data-theme="dark"] .stat-card,
+        html[data-theme="dark"] .modal,
+        html[data-theme="dark"] .tab-btn {
+            background: #151b24;
+            color: #f4f7fb;
+            box-shadow: 0 12px 34px rgba(0,0,0,.28);
+        }
+
+        html[data-theme="dark"] .employee-card {
+            background: #111722;
+            border-color: #273244;
+        }
+
+        html[data-theme="dark"] .employee-title,
+        html[data-theme="dark"] .section-subtitle,
+        html[data-theme="dark"] .stat-label,
+        html[data-theme="dark"] th,
+        html[data-theme="dark"] .empty,
+        html[data-theme="dark"] .review-box span {
+            color: #9eaabc;
+        }
+
+        html[data-theme="dark"] .chip {
+            background: #202938;
+            color: #dce5f2;
+        }
+
+        html[data-theme="dark"] .review-card {
+            background: #332b16;
+            border-color: #6d5921;
+        }
+
+        html[data-theme="dark"] .review-card.approved {
+            background: #153022;
+            border-color: #2e6747;
+        }
+
+        html[data-theme="dark"] .review-card.denied {
+            background: #351d22;
+            border-color: #71323c;
+        }
+
+        html[data-theme="dark"] .review-box,
+        html[data-theme="dark"] .review-reason {
+            background: rgba(255,255,255,.05);
+            color: #eef3fa;
+        }
+
+        html[data-theme="dark"] table,
+        html[data-theme="dark"] td,
+        html[data-theme="dark"] th {
+            border-color: #273244;
+        }
+
+        html[data-theme="dark"] .modal textarea {
+            background: #111722;
+            color: #f4f7fb;
+            border-color: #2a3546;
+        }
+
+        html[data-theme="dark"] .modal textarea::placeholder {
+            color: #7f8ba0;
+        }
+
+        html[data-theme="dark"] .cancel-btn {
+            background: #202938;
+            color: #dce5f2;
+        }
+
+        html[data-theme="dark"] .logout {
+            background: #351d22;
+            color: #ff8080;
+        }
+
+        html[data-theme="dark"] .theme-select {
+            background-color: #151b24;
+            color: #f4f7fb;
+            border-color: #2a3546;
+        }
+
+        html[data-theme="dark"] .modal-overlay {
+            background: rgba(0,0,0,.62);
+        }
+
+        @media (max-width: 650px) {
+            .topbar {
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .topbar-actions {
+                gap: 8px;
+            }
+
+            .theme-select {
+                max-width: 118px;
+                padding-left: 11px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+
+        <div class="brand">
+            AegisAI
+        </div>
+
+        <div class="topbar-actions">
+
+            <select
+                id="themeSelect"
+                class="theme-select"
+                aria-label="Appearance"
+                onchange="setThemePreference(this.value)"
+            >
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+
+            <a href="/logout">
+
+                <button class="logout">
+                    Logout
+                </button>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <section class="hero">
+
+        <h1>
+            Welcome, {{ manager.name }}
+        </h1>
+
+        <p>
+            {{ manager.title }}
+            •
+            {{ manager.role }}
+            •
+            Clearance {{ manager.clearance }}
+        </p>
+
+    </section>
+
+
+    <div class="tabs">
+
+        <button
+            class="tab-btn active"
+            onclick="openTab(
+                'employees',
+                this
+            )"
+        >
+            Employees
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="openTab(
+                'reviews',
+                this
+            )"
+        >
+            Reviews
+        </button>
+
+        <button
+            class="tab-btn"
+            onclick="openTab(
+                'audit',
+                this
+            )"
+        >
+            Audit
+        </button>
+
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- EMPLOYEES -->
+    <!-- ============================================== -->
+
+    <section
+        id="employees"
+        class="tab-content active"
+    >
+
+        <div class="section-card">
+
+            <h2 class="section-title">
+                Employee Access
+            </h2>
+
+            <div class="section-subtitle">
+                Monitor and contain employee access
+                when suspicious activity is detected.
+            </div>
+
+
+            <div class="employee-grid">
+
+                {% for employee in employees %}
+
+                {% set restriction = employee.restriction %}
+
+
+                <div class="employee-card">
+
+                    <div class="employee-top">
+
+                        <div>
+
+                            <div class="employee-name">
+                                {{ employee.name }}
+                            </div>
+
+                            <div class="employee-title">
+                                {{ employee.title }}
+                            </div>
+
+                        </div>
+
+
+                        {% if restriction.all_blocked %}
+
+                        <span
+                            class="
+                                status
+                                status-all
+                            "
+                        >
+                            ALL SUSPENDED
+                        </span>
+
+                        {% elif restriction.send_blocked %}
+
+                        <span
+                            class="
+                                status
+                                status-send
+                            "
+                        >
+                            SEND SUSPENDED
+                        </span>
+
+                        {% else %}
+
+                        <span
+                            class="
+                                status
+                                status-active
+                            "
+                        >
+                            ACTIVE
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="meta">
+
+                        <span class="chip">
+                            {{ employee.role }}
+                        </span>
+
+                        <span class="chip">
+                            Clearance
+                            {{ employee.clearance }}
+                        </span>
+
+                        <span class="chip">
+                            {{ employee.email }}
+                        </span>
+
+                    </div>
+
+
+                    {% if restriction.reason %}
+
+                    <div class="review-reason">
+
+                        <strong>
+                            Restriction reason:
+                        </strong>
+
+                        {{ restriction.reason }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <div class="employee-actions">
+
+                        <button
+                            class="
+                                action-btn
+                                btn-send
+                            "
+                            onclick="
+                                openRestrictionModal(
+                                    '{{ employee.id }}',
+                                    '{{ employee.name }}',
+                                    'send'
+                                )
+                            "
+                        >
+                            Suspend SEND
+                        </button>
+
+
+                        <button
+                            class="
+                                action-btn
+                                btn-all
+                            "
+                            onclick="
+                                openRestrictionModal(
+                                    '{{ employee.id }}',
+                                    '{{ employee.name }}',
+                                    'all'
+                                )
+                            "
+                        >
+                            Suspend All
+                        </button>
+
+
+                        <button
+                            class="
+                                action-btn
+                                btn-restore
+                            "
+                            onclick="
+                                restoreAccess(
+                                    '{{ employee.id }}'
+                                )
+                            "
+                        >
+                            Restore
+                        </button>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- REVIEWS -->
+    <!-- ============================================== -->
+
+    <section
+        id="reviews"
+        class="tab-content"
+    >
+
+        <div class="review-stats">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Reviews
+                </div>
+
+                <div
+                    id="reviewTotal"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Pending
+                </div>
+
+                <div
+                    id="reviewPending"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Approved
+                </div>
+
+                <div
+                    id="reviewApproved"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Denied
+                </div>
+
+                <div
+                    id="reviewDenied"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section-card">
+
+            <h2 class="section-title">
+                Human Review Queue
+            </h2>
+
+            <div class="section-subtitle">
+                Requests that passed mandatory policy checks
+                but require a human security decision
+                before execution.
+            </div>
+
+
+            <div
+                id="reviewList"
+                class="review-list"
+            >
+
+                <div class="empty">
+                    Loading reviews...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- AUDIT -->
+    <!-- ============================================== -->
+
+    <section
+        id="audit"
+        class="tab-content"
+    >
+
+        <div class="audit-stats">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Events
+                </div>
+
+                <div
+                    id="totalEvents"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Allowed
+                </div>
+
+                <div
+                    id="allowedEvents"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Blocked
+                </div>
+
+                <div
+                    id="blockedEvents"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Critical
+                </div>
+
+                <div
+                    id="criticalEvents"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="section-card">
+
+            <h2 class="section-title">
+                Security Audit Log
+            </h2>
+
+
+            <div class="audit-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                User
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                            <th>
+                                File / Target
+                            </th>
+
+                            <th>
+                                Decision
+                            </th>
+
+                            <th>
+                                Risk
+                            </th>
+
+                            <th>
+                                Reason
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="auditBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="empty"
+                            >
+                                Loading audit...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- ============================================== -->
+<!-- RESTRICTION MODAL -->
+<!-- ============================================== -->
+
+<div
+    id="restrictionModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <h2 id="restrictionTitle">
+            Restrict Access
+        </h2>
+
+        <p id="restrictionEmployee">
+        </p>
+
+        <textarea
+            id="restrictionReason"
+            placeholder="
+Reason for restriction...
+            "
+        ></textarea>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="
+                    closeRestrictionModal()
+                "
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="
+                    confirm-btn
+                    confirm-danger
+                "
+                onclick="
+                    applyRestriction()
+                "
+            >
+                Apply
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================== -->
+<!-- REVIEW DECISION MODAL -->
+<!-- ============================================== -->
+
+<div
+    id="reviewModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <h2 id="reviewModalTitle">
+            Review Decision
+        </h2>
+
+        <p id="reviewModalDescription">
+        </p>
+
+
+        <textarea
+            id="reviewReason"
+            placeholder="
+Optional reviewer reason...
+            "
+        ></textarea>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="
+                    closeReviewModal()
+                "
+            >
+                Cancel
+            </button>
+
+
+            <button
+                id="reviewConfirmButton"
+                class="confirm-btn"
+                onclick="
+                    submitReviewDecision()
+                "
+            >
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // APPEARANCE
+    // =====================================================
+
+    function resolveThemePreference(preference) {
+        if (
+            preference === "dark"
+            ||
+            preference === "light"
+        ) {
+            return preference;
+        }
+
+        return window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        ).matches
+            ? "dark"
+            : "light";
+    }
+
+    function applyThemePreference(preference) {
+        const safePreference =
+            ["system", "light", "dark"].includes(preference)
+                ? preference
+                : "system";
+
+        document.documentElement.dataset.theme =
+            resolveThemePreference(safePreference);
+
+        document.documentElement.dataset.themePreference =
+            safePreference;
+
+        const select =
+            document.getElementById("themeSelect");
+
+        if (select) {
+            select.value = safePreference;
+        }
+    }
+
+    function setThemePreference(preference) {
+        localStorage.setItem(
+            "aegis-theme",
+            preference
+        );
+
+        applyThemePreference(preference);
+    }
+
+    const initialThemePreference =
+        localStorage.getItem("aegis-theme")
+        || "system";
+
+    applyThemePreference(
+        initialThemePreference
+    );
+
+    const systemThemeQuery =
+        window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        );
+
+    systemThemeQuery.addEventListener(
+        "change",
+        () => {
+            const preference =
+                localStorage.getItem("aegis-theme")
+                || "system";
+
+            if (preference === "system") {
+                applyThemePreference("system");
+            }
+        }
+    );
+
+
+
+    let restrictionUserId = null;
+    let restrictionType = null;
+
+    let currentReviewId = null;
+    let currentReviewDecision = null;
+
+
+    // =====================================================
+    // TABS
+    // =====================================================
+
+    function openTab(
+        tabId,
+        button
+    ) {
+
+        document
+            .querySelectorAll(
+                ".tab-content"
+            )
+            .forEach(
+                element => {
+
+                    element.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".tab-btn"
+            )
+            .forEach(
+                element => {
+
+                    element.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                tabId
+            )
+            .classList.add(
+                "active"
+            );
+
+
+        button.classList.add(
+            "active"
+        );
+
+
+        if (
+            tabId === "reviews"
+        ) {
+
+            loadReviews();
+
+        }
+
+
+        if (
+            tabId === "audit"
+        ) {
+
+            loadAudit();
+
+        }
+
+    }
+
+
+    // =====================================================
+    // RESTRICTION MODAL
+    // =====================================================
+
+    function openRestrictionModal(
+        userId,
+        employeeName,
+        type
+    ) {
+
+        restrictionUserId = userId;
+        restrictionType = type;
+
+
+        document
+            .getElementById(
+                "restrictionEmployee"
+            )
+            .textContent =
+                "Employee: "
+                + employeeName;
+
+
+        document
+            .getElementById(
+                "restrictionReason"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "restrictionTitle"
+            )
+            .textContent =
+                type === "send"
+                    ? "Suspend SEND"
+                    : "Suspend All Access";
+
+
+        document
+            .getElementById(
+                "restrictionModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeRestrictionModal() {
+
+        document
+            .getElementById(
+                "restrictionModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    async function applyRestriction() {
+
+        const reason =
+            document
+                .getElementById(
+                    "restrictionReason"
+                )
+                .value
+                .trim();
+
+
+        const form =
+            new FormData();
+
+
+        form.append(
+            "user_id",
+            restrictionUserId
+        );
+
+
+        form.append(
+            "reason",
+            reason
+        );
+
+
+        const endpoint =
+            restrictionType === "send"
+
+                ? "/api/manager/restrict-send"
+
+                : "/api/manager/restrict-all";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+                        method: "POST",
+                        body: form
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.error
+                    || "Operation failed."
+                );
+
+                return;
+
+            }
+
+
+            location.reload();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Could not update restriction."
+            );
+
+        }
+
+    }
+
+
+    async function restoreAccess(
+        userId
+    ) {
+
+        if (
+            !confirm(
+                "Restore access for this employee?"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const form =
+            new FormData();
+
+
+        form.append(
+            "user_id",
+            userId
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/manager/restore",
+                    {
+                        method: "POST",
+                        body: form
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.error
+                    || "Restore failed."
+                );
+
+                return;
+
+            }
+
+
+            location.reload();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Could not restore access."
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // REVIEWS
+    // =====================================================
+
+    async function loadReviews() {
+
+        const container =
+            document
+                .getElementById(
+                    "reviewList"
+                );
+
+
+        container.innerHTML =
+            `
+            <div class="empty">
+                Loading reviews...
+            </div>
+            `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/manager/reviews"
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                container.innerHTML =
+                    `
+                    <div class="empty">
+                        Could not load reviews.
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            const reviews =
+                data.reviews || [];
+
+
+            updateReviewStats(
+                reviews
+            );
+
+
+            if (
+                reviews.length === 0
+            ) {
+
+                container.innerHTML =
+                    `
+                    <div class="empty">
+                        No review requests yet.
+                    </div>
+                    `;
+
+                return;
+
+            }
+
+
+            container.innerHTML = "";
+
+
+            reviews.forEach(
+                review => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    let cardClass =
+                        "review-card";
+
+
+                    if (
+                        review.status
+                        === "APPROVED"
+                    ) {
+
+                        cardClass +=
+                            " approved";
+
+                    }
+
+
+                    if (
+                        review.status
+                        === "DENIED"
+                    ) {
+
+                        cardClass +=
+                            " denied";
+
+                    }
+
+
+                    card.className =
+                        cardClass;
+
+
+                    let badgeClass =
+                        "pending";
+
+
+                    if (
+                        review.status
+                        === "APPROVED"
+                    ) {
+
+                        badgeClass =
+                            "approved-badge";
+
+                    }
+
+
+                    if (
+                        review.status
+                        === "DENIED"
+                    ) {
+
+                        badgeClass =
+                            "denied-badge";
+
+                    }
+
+
+                    let actions = "";
+
+
+                    if (
+                        review.status
+                        === "PENDING"
+                    ) {
+
+                        actions =
+                            `
+                            <div class="
+                                review-actions
+                            ">
+
+                                <button
+                                    class="
+                                        approve-btn
+                                    "
+                                    onclick="
+                                        openReviewModal(
+                                            ${review.id},
+                                            'APPROVE',
+                                            '${escapeJs(
+                                                review.username
+                                            )}'
+                                        )
+                                    "
+                                >
+                                    Approve
+                                </button>
+
+                                <button
+                                    class="
+                                        deny-btn
+                                    "
+                                    onclick="
+                                        openReviewModal(
+                                            ${review.id},
+                                            'DENY',
+                                            '${escapeJs(
+                                                review.username
+                                            )}'
+                                        )
+                                    "
+                                >
+                                    Deny
+                                </button>
+
+                            </div>
+                            `;
+
+                    }
+
+
+                    let reviewerInfo = "";
+
+
+                    if (
+                        review.status
+                        !== "PENDING"
+                    ) {
+
+                        reviewerInfo =
+                            `
+                            <div
+                                class="
+                                    review-reason
+                                "
+                            >
+
+                                <strong>
+                                    Reviewed by:
+                                </strong>
+
+                                ${
+                                    safeText(
+                                        review.reviewed_by
+                                        || "-"
+                                    )
+                                }
+
+                                <br>
+
+                                <strong>
+                                    Reviewer reason:
+                                </strong>
+
+                                ${
+                                    safeText(
+                                        review.reviewer_reason
+                                        || "-"
+                                    )
+                                }
+
+                            </div>
+                            `;
+
+                    }
+
+
+                    card.innerHTML =
+                        `
+                        <div
+                            class="
+                                review-header
+                            "
+                        >
+
+                            <div>
+
+                                <div
+                                    class="
+                                        review-user
+                                    "
+                                >
+                                    ${
+                                        safeText(
+                                            review.username
+                                        )
+                                    }
+                                </div>
+
+                                <div
+                                    class="
+                                        employee-title
+                                    "
+                                >
+                                    ${
+                                        safeText(
+                                            review.department
+                                        )
+                                    }
+                                    •
+                                    ${
+                                        safeText(
+                                            review.title
+                                            || ""
+                                        )
+                                    }
+                                </div>
+
+                            </div>
+
+
+                            <span
+                                class="
+                                    review-status
+                                    ${badgeClass}
+                                "
+                            >
+                                ${
+                                    safeText(
+                                        review.status
+                                    )
+                                }
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                review-grid
+                            "
+                        >
+
+                            <div
+                                class="
+                                    review-box
+                                "
+                            >
+
+                                <span>
+                                    Action
+                                </span>
+
+                                <strong>
+                                    ${
+                                        safeText(
+                                            review.action
+                                        )
+                                    }
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    review-box
+                                "
+                            >
+
+                                <span>
+                                    File
+                                </span>
+
+                                <strong>
+                                    ${
+                                        safeText(
+                                            review.file
+                                            || "-"
+                                        )
+                                    }
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    review-box
+                                "
+                            >
+
+                                <span>
+                                    Recipient
+                                </span>
+
+                                <strong>
+                                    ${
+                                        safeText(
+                                            review.recipient
+                                            || "-"
+                                        )
+                                    }
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    review-box
+                                "
+                            >
+
+                                <span>
+                                    Risk
+                                </span>
+
+                                <strong>
+                                    ${
+                                        safeText(
+                                            review.risk_score
+                                        )
+                                    }
+                                    /100
+                                    •
+                                    ${
+                                        safeText(
+                                            review.risk_level
+                                        )
+                                    }
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                review-reason
+                            "
+                        >
+
+                            <strong>
+                                Request:
+                            </strong>
+
+                            ${
+                                safeText(
+                                    review.request
+                                    || "-"
+                                )
+                            }
+
+                        </div>
+
+
+                        <div
+                            class="
+                                review-reason
+                            "
+                        >
+
+                            <strong>
+                                Risk factors:
+                            </strong>
+
+                            ${
+                                Array.isArray(
+                                    review.risk_reasons
+                                )
+                                &&
+                                review.risk_reasons.length
+
+                                    ? review
+                                        .risk_reasons
+                                        .map(
+                                            item =>
+                                                safeText(
+                                                    item
+                                                )
+                                        )
+                                        .join(
+                                            ", "
+                                        )
+
+                                    : "-"
+                            }
+
+                        </div>
+
+
+                        ${reviewerInfo}
+
+                        ${actions}
+                        `;
+
+
+                    container.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            container.innerHTML =
+                `
+                <div class="empty">
+                    Could not connect to
+                    the review service.
+                </div>
+                `;
+
+        }
+
+    }
+
+
+    function updateReviewStats(
+        reviews
+    ) {
+
+        const total =
+            reviews.length;
+
+
+        const pending =
+            reviews.filter(
+                review =>
+                    review.status
+                    === "PENDING"
+            ).length;
+
+
+        const approved =
+            reviews.filter(
+                review =>
+                    review.status
+                    === "APPROVED"
+            ).length;
+
+
+        const denied =
+            reviews.filter(
+                review =>
+                    review.status
+                    === "DENIED"
+            ).length;
+
+
+        document
+            .getElementById(
+                "reviewTotal"
+            )
+            .textContent =
+                total;
+
+
+        document
+            .getElementById(
+                "reviewPending"
+            )
+            .textContent =
+                pending;
+
+
+        document
+            .getElementById(
+                "reviewApproved"
+            )
+            .textContent =
+                approved;
+
+
+        document
+            .getElementById(
+                "reviewDenied"
+            )
+            .textContent =
+                denied;
+
+    }
+
+
+    function openReviewModal(
+        reviewId,
+        decision,
+        username
+    ) {
+
+        currentReviewId =
+            reviewId;
+
+        currentReviewDecision =
+            decision;
+
+
+        document
+            .getElementById(
+                "reviewReason"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "reviewModalTitle"
+            )
+            .textContent =
+                decision === "APPROVE"
+
+                    ? "Approve Review"
+
+                    : "Deny Review";
+
+
+        document
+            .getElementById(
+                "reviewModalDescription"
+            )
+            .textContent =
+                (
+                    decision === "APPROVE"
+                        ? "Approve"
+                        : "Deny"
+                )
+                +
+                " security review for "
+                +
+                username
+                +
+                "?";
+
+
+        const button =
+            document
+                .getElementById(
+                    "reviewConfirmButton"
+                );
+
+
+        button.textContent =
+            decision === "APPROVE"
+
+                ? "Approve"
+
+                : "Deny";
+
+
+        button.className =
+            decision === "APPROVE"
+
+                ? "confirm-btn"
+
+                : "confirm-btn confirm-danger";
+
+
+        document
+            .getElementById(
+                "reviewModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeReviewModal() {
+
+        document
+            .getElementById(
+                "reviewModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    async function submitReviewDecision() {
+
+        const reason =
+            document
+                .getElementById(
+                    "reviewReason"
+                )
+                .value
+                .trim();
+
+
+        const endpoint =
+            currentReviewDecision
+            === "APPROVE"
+
+                ? "/api/manager/reviews/approve"
+
+                : "/api/manager/reviews/deny";
+
+
+        const form =
+            new FormData();
+
+
+        form.append(
+            "review_id",
+            currentReviewId
+        );
+
+
+        form.append(
+            "reason",
+            reason
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    endpoint,
+                    {
+                        method: "POST",
+                        body: form
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.error
+                    || "Review update failed."
+                );
+
+                return;
+
+            }
+
+
+            closeReviewModal();
+
+            loadReviews();
+
+            loadAudit();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Could not update review."
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // AUDIT
+    // =====================================================
+
+    async function loadAudit() {
+
+        const body =
+            document
+                .getElementById(
+                    "auditBody"
+                );
+
+
+        body.innerHTML =
+            `
+            <tr>
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    Loading audit...
+                </td>
+            </tr>
+            `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/manager/audit"
+                );
+
+
+            const data =
+                await response.json();
+
+
+            const logs =
+                data.logs || [];
+
+
+            updateAuditStats(
+                logs
+            );
+
+
+            if (
+                logs.length === 0
+            ) {
+
+                body.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+                            No audit events yet.
+                        </td>
+                    </tr>
+                    `;
+
+                return;
+
+            }
+
+
+            body.innerHTML = "";
+
+
+            logs.forEach(
+                log => {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    const decision =
+                        String(
+                            log.decision
+                            || "-"
+                        );
+
+
+                    let decisionClass =
+                        "";
+
+
+                    if (
+                        decision
+                        === "ALLOW"
+                    ) {
+
+                        decisionClass =
+                            "allow";
+
+                    }
+
+                    else if (
+                        decision
+                        === "BLOCK"
+                    ) {
+
+                        decisionClass =
+                            "block";
+
+                    }
+
+                    else if (
+                        decision
+                        === "REVIEW"
+                    ) {
+
+                        decisionClass =
+                            "review";
+
+                    }
+
+                    else if (
+                        decision
+                        === "ADMIN"
+                    ) {
+
+                        decisionClass =
+                            "admin";
+
+                    }
+
+
+                    row.innerHTML =
+                        `
+                        <td>
+                            ${
+                                safeText(
+                                    log.timestamp
+                                    || "-"
+                                )
+                            }
+                        </td>
+
+                        <td>
+                            ${
+                                safeText(
+                                    log.user
+                                    || "-"
+                                )
+                            }
+                        </td>
+
+                        <td>
+                            ${
+                                safeText(
+                                    log.action
+                                    || "-"
+                                )
+                            }
+                        </td>
+
+                        <td>
+                            ${
+                                safeText(
+                                    log.file
+                                    ||
+                                    log.target_user
+                                    ||
+                                    "-"
+                                )
+                            }
+                        </td>
+
+                        <td
+                            class="
+                                decision
+                                ${decisionClass}
+                            "
+                        >
+                            ${
+                                safeText(
+                                    decision
+                                )
+                            }
+                        </td>
+
+                        <td>
+                            ${
+                                safeText(
+                                    log.risk_score
+                                    ?? "-"
+                                )
+                            }
+                        </td>
+
+                        <td>
+                            ${
+                                safeText(
+                                    log.reason
+                                    || "-"
+                                )
+                            }
+                        </td>
+                        `;
+
+
+                    body.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            body.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="7"
+                        class="empty"
+                    >
+                        Could not load audit.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+    }
+
+
+    function updateAuditStats(
+        logs
+    ) {
+
+        const total =
+            logs.length;
+
+
+        const allowed =
+            logs.filter(
+                log =>
+                    log.decision
+                    === "ALLOW"
+            ).length;
+
+
+        const blocked =
+            logs.filter(
+                log =>
+                    log.decision
+                    === "BLOCK"
+            ).length;
+
+
+        const critical =
+            logs.filter(
+                log =>
+                    log.risk_level
+                    === "CRITICAL"
+            ).length;
+
+
+        document
+            .getElementById(
+                "totalEvents"
+            )
+            .textContent =
+                total;
+
+
+        document
+            .getElementById(
+                "allowedEvents"
+            )
+            .textContent =
+                allowed;
+
+
+        document
+            .getElementById(
+                "blockedEvents"
+            )
+            .textContent =
+                blocked;
+
+
+        document
+            .getElementById(
+                "criticalEvents"
+            )
+            .textContent =
+                critical;
+
+    }
+
+
+    // =====================================================
+    // SAFE TEXT
+    // =====================================================
+
+    function safeText(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    function escapeJs(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /\\/g,
+                "\\\\"
+            )
+            .replace(
+                /'/g,
+                "\\'"
+            )
+            .replace(
+                /\n/g,
+                " "
+            )
+            .replace(
+                /\r/g,
+                " "
+            );
+
+    }
+
+
+    // =====================================================
+    // INITIAL LOAD
+    // =====================================================
+
+    loadAudit();
+
+</script>
+
+</body>
+</html>

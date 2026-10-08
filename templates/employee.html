@@ -1,0 +1,4028 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AegisAI
+    </title>
+
+
+
+    <script>
+        (function () {
+            const savedTheme =
+                localStorage.getItem("aegis-theme")
+                || "system";
+
+            const systemDark =
+                window.matchMedia
+                && window.matchMedia(
+                    "(prefers-color-scheme: dark)"
+                ).matches;
+
+            const resolvedTheme =
+                savedTheme === "system"
+                    ? (systemDark ? "dark" : "light")
+                    : savedTheme;
+
+            document.documentElement.dataset.theme =
+                resolvedTheme;
+
+            document.documentElement.dataset.themePreference =
+                savedTheme;
+        })();
+    </script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f4f7fc;
+
+            color: #0f1f3d;
+        }
+
+        button,
+        textarea,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .page {
+
+            max-width: 1180px;
+
+            margin: 0 auto;
+
+            padding:
+                28px
+                24px
+                60px;
+        }
+
+        .topbar {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            margin-bottom:
+                24px;
+        }
+
+        .brand {
+
+            font-size:
+                24px;
+
+            font-weight:
+                900;
+
+            color:
+                #1459ff;
+        }
+
+        .logout {
+
+            border: none;
+
+            background:
+                #fff0f0;
+
+            color:
+                #d62828;
+
+            padding:
+                11px 18px;
+
+            border-radius:
+                14px;
+
+            font-weight:
+                800;
+        }
+
+        .profile {
+
+            background:
+                white;
+
+            border-radius:
+                25px;
+
+            padding:
+                28px;
+
+            box-shadow:
+                0
+                12px
+                34px
+                rgba(
+                    15,
+                    31,
+                    61,
+                    0.07
+                );
+        }
+
+        .profile-top {
+
+            display: flex;
+
+            align-items:
+                center;
+
+            gap:
+                17px;
+        }
+
+        .avatar {
+
+            width:
+                62px;
+
+            height:
+                62px;
+
+            border-radius:
+                18px;
+
+            background:
+                #e8f0ff;
+
+            color:
+                #1459ff;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                28px;
+
+            font-weight:
+                900;
+        }
+
+        .profile-name {
+
+            font-size:
+                29px;
+
+            font-weight:
+                900;
+        }
+
+        .profile-title {
+
+            color:
+                #7d89a1;
+
+            margin-top:
+                4px;
+        }
+
+        .meta {
+
+            display:
+                flex;
+
+            gap:
+                8px;
+
+            flex-wrap:
+                wrap;
+
+            margin-top:
+                17px;
+        }
+
+        .chip {
+
+            background:
+                #edf2f8;
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+        }
+
+        .restriction-alert {
+
+            margin-top:
+                18px;
+
+            border-radius:
+                14px;
+
+            padding:
+                15px;
+
+            font-weight:
+                800;
+        }
+
+        .restriction-all {
+
+            background:
+                #fff0f0;
+
+            border:
+                1px solid
+                #ffb9b9;
+
+            color:
+                #c62828;
+        }
+
+        .restriction-send {
+
+            background:
+                #fff8df;
+
+            border:
+                1px solid
+                #f2d47e;
+
+            color:
+                #946200;
+        }
+
+        .section {
+
+            margin-top:
+                24px;
+
+            background:
+                white;
+
+            border-radius:
+                25px;
+
+            padding:
+                28px;
+
+            box-shadow:
+                0
+                12px
+                34px
+                rgba(
+                    15,
+                    31,
+                    61,
+                    0.07
+                );
+        }
+
+        .section-title {
+
+            font-size:
+                24px;
+
+            font-weight:
+                900;
+
+            margin-bottom:
+                10px;
+        }
+
+        .section-subtitle {
+
+            color:
+                #7f8aa0;
+
+            margin-bottom:
+                20px;
+        }
+
+        .resource-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        260px,
+                        1fr
+                    )
+                );
+
+            gap:
+                16px;
+        }
+
+        .resource-card {
+
+            background:
+                #fbfcff;
+
+            border:
+                1px solid
+                #dfe6f1;
+
+            border-radius:
+                18px;
+
+            padding:
+                18px;
+        }
+
+        .resource-name {
+
+            font-size:
+                17px;
+
+            font-weight:
+                900;
+        }
+
+        .resource-meta {
+
+            color:
+                #78849b;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.7;
+
+            margin-top:
+                7px;
+        }
+
+        .resource-actions {
+
+            display:
+                flex;
+
+            gap:
+                8px;
+
+            margin-top:
+                13px;
+
+            flex-wrap:
+                wrap;
+        }
+
+        .resource-actions button {
+
+            border:
+                none;
+
+            background:
+                #edf3ff;
+
+            color:
+                #1459ff;
+
+            font-weight:
+                800;
+
+            padding:
+                9px 13px;
+
+            border-radius:
+                11px;
+        }
+
+        .request-box {
+
+            width:
+                100%;
+
+            min-height:
+                145px;
+
+            resize:
+                vertical;
+
+            border:
+                1px solid
+                #dbe3ef;
+
+            border-radius:
+                17px;
+
+            padding:
+                15px;
+
+            outline:
+                none;
+        }
+
+        .selected-title {
+
+            font-size:
+                12px;
+
+            color:
+                #7c879c;
+
+            margin-top:
+                14px;
+        }
+
+        .selected-list {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                8px;
+
+            margin-top:
+                8px;
+        }
+
+        .recipient-chip {
+
+            background:
+                #eaf1ff;
+
+            color:
+                #1459ff;
+
+            border-radius:
+                11px;
+
+            padding:
+                8px 11px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+        }
+
+        .recipient-chip button {
+
+            border:
+                none;
+
+            background:
+                none;
+
+            color:
+                #1459ff;
+
+            margin-left:
+                7px;
+
+            font-weight:
+                900;
+        }
+
+        .request-actions {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            margin-top:
+                16px;
+        }
+
+        .analyze-btn {
+
+            border:
+                none;
+
+            background:
+                #1459ff;
+
+            color:
+                white;
+
+            padding:
+                12px 18px;
+
+            border-radius:
+                13px;
+
+            font-weight:
+                900;
+        }
+
+        .clear-btn {
+
+            border:
+                none;
+
+            background:
+                #edf0f5;
+
+            color:
+                #46526a;
+
+            padding:
+                12px 18px;
+
+            border-radius:
+                13px;
+
+            font-weight:
+                800;
+        }
+
+        .result {
+
+            margin-top:
+                20px;
+
+            display:
+                none;
+
+            border-radius:
+                19px;
+
+            padding:
+                20px;
+        }
+
+        .result.show {
+
+            display:
+                block;
+        }
+
+        .result.allow {
+
+            background:
+                #eefaf2;
+
+            border:
+                1px solid
+                #bfe6c9;
+        }
+
+        .result.block {
+
+            background:
+                #fff0f0;
+
+            border:
+                1px solid
+                #f0bcbc;
+        }
+
+        .result.review {
+
+            background:
+                #fff9e7;
+
+            border:
+                1px solid
+                #efd58a;
+        }
+
+        .result-title {
+
+            font-size:
+                28px;
+
+            font-weight:
+                1000;
+
+            margin-bottom:
+                9px;
+        }
+
+        .result.allow
+        .result-title {
+
+            color:
+                #178544;
+        }
+
+        .result.block
+        .result-title {
+
+            color:
+                #c62828;
+        }
+
+        .result.review
+        .result-title {
+
+            color:
+                #a66b00;
+        }
+
+        .result-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        160px,
+                        1fr
+                    )
+                );
+
+            gap:
+                11px;
+
+            margin-top:
+                16px;
+        }
+
+        .result-box {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.72
+                );
+
+            border-radius:
+                13px;
+
+            padding:
+                13px;
+        }
+
+        .result-box span {
+
+            display:
+                block;
+
+            font-size:
+                11px;
+
+            color:
+                #7b8799;
+
+            margin-bottom:
+                5px;
+        }
+
+        .result-box strong {
+
+            font-size:
+                14px;
+        }
+
+        .recipient-results {
+
+            display:
+                grid;
+
+            gap:
+                10px;
+
+            margin-top:
+                14px;
+        }
+
+        .recipient-result {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.76
+                );
+
+            border-radius:
+                13px;
+
+            padding:
+                13px;
+        }
+
+        .recipient-result.allow {
+
+            border-left:
+                4px solid
+                #1e9b53;
+        }
+
+        .recipient-result.block {
+
+            border-left:
+                4px solid
+                #d62c2c;
+        }
+
+        .recipient-result.review {
+
+            border-left:
+                4px solid
+                #d39a14;
+        }
+
+
+        /* ============================================== */
+        /* REVIEW STATUS */
+        /* ============================================== */
+
+        .review-status-box {
+
+            margin-top:
+                16px;
+
+            padding:
+                16px;
+
+            border-radius:
+                14px;
+
+            background:
+                #fff7da;
+
+            border:
+                1px solid
+                #edd27a;
+        }
+
+        .review-status-title {
+
+            font-size:
+                12px;
+
+            color:
+                #817044;
+
+            margin-bottom:
+                5px;
+        }
+
+        #reviewStatusValue {
+
+            font-size:
+                18px;
+
+            font-weight:
+                900;
+
+            color:
+                #9a6800;
+        }
+
+        .review-status-details {
+
+            margin-top:
+                7px;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+        }
+
+        .review-status-box.approved {
+
+            background:
+                #eefaf2;
+
+            border-color:
+                #bfe6c9;
+        }
+
+        .review-status-box.approved
+        #reviewStatusValue {
+
+            color:
+                #178544;
+        }
+
+        .review-status-box.denied {
+
+            background:
+                #fff0f0;
+
+            border-color:
+                #f0bcbc;
+        }
+
+        .review-status-box.denied
+        #reviewStatusValue {
+
+            color:
+                #c62828;
+        }
+
+
+        /* ============================================== */
+        /* MODAL */
+        /* ============================================== */
+
+        .modal-overlay {
+
+            display:
+                none;
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            background:
+                rgba(
+                    12,
+                    20,
+                    35,
+                    0.35
+                );
+
+            backdrop-filter:
+                blur(6px);
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                18px;
+
+            z-index:
+                100;
+        }
+
+        .modal-overlay.show {
+
+            display:
+                flex;
+        }
+
+        .modal {
+
+            width:
+                min(
+                    560px,
+                    100%
+                );
+
+            background:
+                white;
+
+            border-radius:
+                24px;
+
+            padding:
+                24px;
+
+            box-shadow:
+                0
+                25px
+                60px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.2
+                );
+        }
+
+        .modal h2 {
+
+            margin-top:
+                0;
+        }
+
+        .search-box {
+
+            width:
+                100%;
+
+            border:
+                1px solid
+                #dce3ee;
+
+            border-radius:
+                13px;
+
+            padding:
+                11px 13px;
+
+            margin-bottom:
+                13px;
+        }
+
+        .recipient-list {
+
+            max-height:
+                320px;
+
+            overflow-y:
+                auto;
+
+            display:
+                grid;
+
+            gap:
+                8px;
+        }
+
+        .recipient-row {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            border:
+                1px solid
+                #e5eaf2;
+
+            border-radius:
+                13px;
+
+            padding:
+                11px;
+        }
+
+        .recipient-main {
+
+            flex:
+                1;
+        }
+
+        .recipient-name {
+
+            font-weight:
+                800;
+        }
+
+        .recipient-info {
+
+            font-size:
+                11px;
+
+            color:
+                #7d889e;
+        }
+
+        .modal-actions {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            margin-top:
+                15px;
+        }
+
+        .modal-actions button {
+
+            flex:
+                1;
+
+            border:
+                none;
+
+            border-radius:
+                12px;
+
+            padding:
+                11px;
+
+            font-weight:
+                800;
+        }
+
+        .cancel-btn {
+
+            background:
+                #eef1f5;
+
+            color:
+                #3f4a60;
+        }
+
+        .confirm-btn {
+
+            background:
+                #1459ff;
+
+            color:
+                white;
+        }
+
+
+        /* ============================================== */
+        /* MY HISTORY */
+        /* ============================================== */
+
+        .history-toolbar {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: grid;
+            gap: 9px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 900;
+            color: #7d89a1;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid #dfe6f1;
+            background: #f7f9fd;
+            color: #536079;
+            padding: 9px 13px;
+            border-radius: 12px;
+            font-weight: 800;
+            transition: 0.18s ease;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-1px);
+            border-color: #bfcbe0;
+        }
+
+        .filter-btn.active {
+            background: #1459ff;
+            color: white;
+            border-color: #1459ff;
+            box-shadow: 0 7px 18px rgba(20, 89, 255, 0.18);
+        }
+
+        .history-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+            color: #78849b;
+            font-size: 13px;
+        }
+
+        .history-refresh {
+            border: none;
+            background: #edf3ff;
+            color: #1459ff;
+            padding: 9px 12px;
+            border-radius: 11px;
+            font-weight: 800;
+        }
+
+        .history-list {
+            display: grid;
+            gap: 13px;
+        }
+
+        .history-card {
+            border: 1px solid #e1e7f0;
+            background: #fbfcff;
+            border-radius: 18px;
+            padding: 17px;
+        }
+
+        .history-card.allow {
+            border-left: 5px solid #1e9b53;
+        }
+
+        .history-card.block {
+            border-left: 5px solid #d62c2c;
+        }
+
+        .history-card.review {
+            border-left: 5px solid #d39a14;
+        }
+
+        .history-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .history-main {
+            min-width: 0;
+        }
+
+        .history-action {
+            font-size: 16px;
+            font-weight: 900;
+            color: #0f1f3d;
+        }
+
+        .history-file {
+            margin-top: 3px;
+            color: #65728b;
+            font-size: 13px;
+            word-break: break-word;
+        }
+
+        .history-time {
+            color: #8a95a8;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .history-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 13px;
+        }
+
+        .history-badge {
+            padding: 6px 9px;
+            border-radius: 9px;
+            background: #eef2f8;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .history-badge.allow {
+            background: #e9f8ee;
+            color: #17753e;
+        }
+
+        .history-badge.block {
+            background: #ffeded;
+            color: #bd2626;
+        }
+
+        .history-badge.review {
+            background: #fff5d8;
+            color: #956400;
+        }
+
+        .history-badge.pending {
+            background: #fff5d8;
+            color: #956400;
+        }
+
+        .history-badge.approved {
+            background: #e9f8ee;
+            color: #17753e;
+        }
+
+        .history-badge.denied {
+            background: #ffeded;
+            color: #bd2626;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 9px;
+            margin-top: 13px;
+        }
+
+        .history-detail {
+            background: white;
+            border: 1px solid #edf0f5;
+            border-radius: 12px;
+            padding: 11px;
+            min-width: 0;
+        }
+
+        .history-detail span {
+            display: block;
+            color: #8a95a8;
+            font-size: 10px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .history-detail strong {
+            display: block;
+            font-size: 12px;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+
+        .history-reason {
+            margin-top: 12px;
+            color: #536079;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .history-review-note {
+            margin-top: 12px;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff9e7;
+            border: 1px solid #efd58a;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 30px 16px;
+            color: #8590a5;
+            border: 1px dashed #d6deea;
+            border-radius: 16px;
+            background: #fbfcff;
+        }
+
+        @media (
+            max-width: 720px
+        ) {
+
+            .page {
+
+                padding:
+                    18px
+                    14px
+                    40px;
+            }
+
+            .profile {
+
+                padding:
+                    22px;
+            }
+
+            .profile-name {
+
+                font-size:
+                    24px;
+            }
+
+            .section {
+
+                padding:
+                    21px;
+            }
+
+        }
+
+
+        /* ================================================= */
+        /* APPEARANCE SWITCHER                               */
+        /* ================================================= */
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-select {
+            appearance: none;
+            -webkit-appearance: none;
+            border: 1px solid #dfe6f1;
+            background: white;
+            color: #0f1f3d;
+            padding: 10px 34px 10px 13px;
+            border-radius: 14px;
+            font-weight: 800;
+            outline: none;
+            cursor: pointer;
+            background-image:
+                linear-gradient(
+                    45deg,
+                    transparent 50%,
+                    #7d89a1 50%
+                ),
+                linear-gradient(
+                    135deg,
+                    #7d89a1 50%,
+                    transparent 50%
+                );
+            background-position:
+                calc(100% - 17px) 50%,
+                calc(100% - 12px) 50%;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            transition:
+                background-color .2s ease,
+                color .2s ease,
+                border-color .2s ease,
+                transform .2s ease;
+        }
+
+        .theme-select:hover {
+            transform: translateY(-1px);
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+        }
+
+        html[data-theme="dark"] body {
+            background: #0d1117;
+            color: #f4f7fb;
+        }
+
+        html[data-theme="dark"] .profile,
+        html[data-theme="dark"] .section,
+        html[data-theme="dark"] .modal,
+        html[data-theme="dark"] .resource-card,
+        html[data-theme="dark"] .result-box,
+        html[data-theme="dark"] .history-main,
+        html[data-theme="dark"] .history-empty {
+            background: #151b24;
+            color: #f4f7fb;
+            box-shadow:
+                0 12px 34px
+                rgba(0, 0, 0, 0.28);
+        }
+
+        html[data-theme="dark"] .profile-title,
+        html[data-theme="dark"] .section-subtitle,
+        html[data-theme="dark"] .resource-meta,
+        html[data-theme="dark"] .history-time,
+        html[data-theme="dark"] .history-detail,
+        html[data-theme="dark"] .review-status-details {
+            color: #9eaabc;
+        }
+
+        html[data-theme="dark"] .chip,
+        html[data-theme="dark"] .history-badge,
+        html[data-theme="dark"] .selected-list,
+        html[data-theme="dark"] .recipient-chip {
+            background: #202938;
+            color: #dce5f2;
+        }
+
+        html[data-theme="dark"] .avatar {
+            background: #172b55;
+            color: #72a1ff;
+        }
+
+        html[data-theme="dark"] .request-box,
+        html[data-theme="dark"] .search-box,
+        html[data-theme="dark"] input,
+        html[data-theme="dark"] textarea,
+        html[data-theme="dark"] .recipient-row,
+        html[data-theme="dark"] .history-detail {
+            background: #111722;
+            color: #f4f7fb;
+            border-color: #2a3546;
+        }
+
+        html[data-theme="dark"] .request-box::placeholder,
+        html[data-theme="dark"] .search-box::placeholder,
+        html[data-theme="dark"] input::placeholder,
+        html[data-theme="dark"] textarea::placeholder {
+            color: #7f8ba0;
+        }
+
+        html[data-theme="dark"] .resource-card,
+        html[data-theme="dark"] .recipient-row,
+        html[data-theme="dark"] .history-detail {
+            border-color: #273244;
+        }
+
+        html[data-theme="dark"] .filter-btn,
+        html[data-theme="dark"] .clear-btn,
+        html[data-theme="dark"] .history-refresh {
+            background: #202938;
+            color: #dce5f2;
+            border-color: #303c4f;
+        }
+
+        html[data-theme="dark"] .filter-btn.active {
+            background: #1459ff;
+            color: white;
+            border-color: #1459ff;
+        }
+
+        html[data-theme="dark"] .logout {
+            background: #351d22;
+            color: #ff8080;
+        }
+
+        html[data-theme="dark"] .theme-select {
+            background-color: #151b24;
+            color: #f4f7fb;
+            border-color: #2a3546;
+        }
+
+        html[data-theme="dark"] .restriction-send,
+        html[data-theme="dark"] .review-status-box {
+            background: #332b16;
+            border-color: #6d5921;
+            color: #ffd76d;
+        }
+
+        html[data-theme="dark"] .restriction-all,
+        html[data-theme="dark"] .review-status-box.denied {
+            background: #351d22;
+            border-color: #71323c;
+            color: #ff8e98;
+        }
+
+        html[data-theme="dark"] .review-status-box.approved {
+            background: #153022;
+            border-color: #2e6747;
+            color: #78d89f;
+        }
+
+        html[data-theme="dark"] .recipient-result.allow {
+            background: #153022;
+            border-color: #2e6747;
+        }
+
+        html[data-theme="dark"] .recipient-result.block {
+            background: #351d22;
+            border-color: #71323c;
+        }
+
+        html[data-theme="dark"] .recipient-result.review {
+            background: #332b16;
+            border-color: #6d5921;
+        }
+
+        html[data-theme="dark"] .history-review-note {
+            background: #332b16;
+            border-color: #6d5921;
+        }
+
+        html[data-theme="dark"] .history-file,
+        html[data-theme="dark"] .history-action,
+        html[data-theme="dark"] .profile-name,
+        html[data-theme="dark"] .resource-name,
+        html[data-theme="dark"] .section-title,
+        html[data-theme="dark"] .history-summary,
+        html[data-theme="dark"] .history-reason,
+        html[data-theme="dark"] .recipient-name {
+            color: #f4f7fb;
+        }
+
+        html[data-theme="dark"] .modal-overlay {
+            background: rgba(0, 0, 0, 0.62);
+        }
+
+        @media (max-width: 650px) {
+            .topbar {
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .topbar-actions {
+                gap: 8px;
+            }
+
+            .theme-select {
+                max-width: 118px;
+                padding-left: 11px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <div class="topbar">
+
+        <div class="brand">
+            AegisAI
+        </div>
+
+        <div class="topbar-actions">
+
+            <select
+                id="themeSelect"
+                class="theme-select"
+                aria-label="Appearance"
+                onchange="setThemePreference(this.value)"
+            >
+                <option value="system">
+                    System
+                </option>
+
+                <option value="light">
+                    Light
+                </option>
+
+                <option value="dark">
+                    Dark
+                </option>
+            </select>
+
+            <a href="/logout">
+
+                <button class="logout">
+                    Logout
+                </button>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PROFILE -->
+    <!-- ============================================== -->
+
+    <section class="profile">
+
+
+        <div class="profile-top">
+
+
+            <div class="avatar">
+                {{ user.name[0] }}
+            </div>
+
+
+            <div>
+
+                <div class="profile-name">
+                    {{ user.name }}
+                </div>
+
+                <div class="profile-title">
+                    {{ user.title }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="meta">
+
+            <span class="chip">
+                {{ user.role }}
+            </span>
+
+            <span class="chip">
+                Clearance {{ user.clearance }}
+            </span>
+
+            <span class="chip">
+                {{ user.email }}
+            </span>
+
+        </div>
+
+
+        {% if restriction.all_blocked %}
+
+        <div
+            class="
+                restriction-alert
+                restriction-all
+            "
+        >
+            Security restriction:
+            All account operations are suspended.
+        </div>
+
+        {% elif restriction.send_blocked %}
+
+        <div
+            class="
+                restriction-alert
+                restriction-send
+            "
+        >
+            Security restriction:
+            SEND operations are suspended.
+        </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- RESOURCES -->
+    <!-- ============================================== -->
+
+    <section class="section">
+
+
+        <div class="section-title">
+            Your Resources
+        </div>
+
+
+        <div class="section-subtitle">
+            Department resources available to your account.
+        </div>
+
+
+        <div class="resource-grid">
+
+
+            {% for file_name, file_info in files.items() %}
+
+
+            <div class="resource-card">
+
+
+                <div class="resource-name">
+                    {{ file_name }}
+                </div>
+
+
+                <div class="resource-meta">
+
+                    {{ file_info.classification }}
+
+                    <br>
+
+                    Clearance
+                    {{ file_info.required_clearance }}
+
+                </div>
+
+
+                <div class="resource-actions">
+
+
+                    <button
+                        onclick="
+                            setRequest(
+                                'READ',
+                                '{{ file_name }}'
+                            )
+                        "
+                    >
+                        Read
+                    </button>
+
+
+                    <button
+                        onclick="
+                            setRequest(
+                                'EDIT',
+                                '{{ file_name }}'
+                            )
+                        "
+                    >
+                        Edit
+                    </button>
+
+
+                    <button
+                        onclick="
+                            openRecipients(
+                                '{{ file_name }}'
+                            )
+                        "
+                    >
+                        Send
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- AI REQUEST -->
+    <!-- ============================================== -->
+
+    <section class="section">
+
+
+        <div class="section-title">
+            AI Agent Request
+        </div>
+
+
+        <div class="section-subtitle">
+            AegisAI validates the AI agent request
+            before execution.
+        </div>
+
+
+        <textarea
+            id="requestInput"
+            class="request-box"
+            placeholder="Example: Read payroll.xlsx"
+        ></textarea>
+
+
+        <div
+            id="selectedRecipientsTitle"
+            class="selected-title"
+            style="display:none;"
+        >
+            Selected recipients
+        </div>
+
+
+        <div
+            id="selectedRecipients"
+            class="selected-list"
+        ></div>
+
+
+        <div class="request-actions">
+
+
+            <button
+                id="analyzeButton"
+                class="analyze-btn"
+                onclick="analyzeRequest()"
+            >
+                Analyze Request
+            </button>
+
+
+            <button
+                class="clear-btn"
+                onclick="clearRequest()"
+            >
+                Clear
+            </button>
+
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- RESULT -->
+        <!-- ========================================== -->
+
+        <div
+            id="resultBox"
+            class="result"
+        >
+
+
+            <div
+                id="resultTitle"
+                class="result-title"
+            ></div>
+
+
+            <div id="resultReason">
+            </div>
+
+
+            <div class="result-grid">
+
+
+                <div class="result-box">
+
+                    <span>
+                        Action
+                    </span>
+
+                    <strong id="resultAction">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="result-box">
+
+                    <span>
+                        File
+                    </span>
+
+                    <strong id="resultFile">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="result-box">
+
+                    <span>
+                        Risk
+                    </span>
+
+                    <strong id="resultRisk">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="recipientResults"
+                class="recipient-results"
+            ></div>
+
+
+            <!-- ====================================== -->
+            <!-- REVIEW STATUS -->
+            <!-- ====================================== -->
+
+            <div
+                id="reviewStatusBox"
+                class="review-status-box"
+                style="display:none;"
+            >
+
+                <div class="review-status-title">
+                    Review Status
+                </div>
+
+                <div id="reviewStatusValue">
+                    PENDING
+                </div>
+
+                <div
+                    id="reviewStatusDetails"
+                    class="review-status-details"
+                ></div>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- ============================================== -->
+    <!-- MY HISTORY -->
+    <!-- ============================================== -->
+
+    <section class="section" id="historySection">
+
+        <div class="section-title">
+            My History
+        </div>
+
+        <div class="section-subtitle">
+            Your AegisAI activity only. Newest events appear first.
+        </div>
+
+        <div class="history-toolbar">
+
+            <div class="filter-group">
+                <div class="filter-label">Action</div>
+
+                <div class="filter-buttons" id="actionFilters">
+                    <button class="filter-btn active" data-value="ALL" onclick="setHistoryFilter('action', 'ALL', this)">All</button>
+                    <button class="filter-btn" data-value="SEND" onclick="setHistoryFilter('action', 'SEND', this)">Send</button>
+                    <button class="filter-btn" data-value="EDIT" onclick="setHistoryFilter('action', 'EDIT', this)">Edit</button>
+                    <button class="filter-btn" data-value="READ" onclick="setHistoryFilter('action', 'READ', this)">Read</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Decision</div>
+
+                <div class="filter-buttons" id="decisionFilters">
+                    <button class="filter-btn active" data-value="ALL" onclick="setHistoryFilter('decision', 'ALL', this)">All</button>
+                    <button class="filter-btn" data-value="ALLOW" onclick="setHistoryFilter('decision', 'ALLOW', this)">Allow</button>
+                    <button class="filter-btn" data-value="BLOCK" onclick="setHistoryFilter('decision', 'BLOCK', this)">Block</button>
+                    <button class="filter-btn" data-value="REVIEW" onclick="setHistoryFilter('decision', 'REVIEW', this)">Review</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="history-summary">
+            <span id="historyCount">Loading history...</span>
+
+            <button class="history-refresh" onclick="loadEmployeeHistory()">
+                Refresh
+            </button>
+        </div>
+
+        <div id="historyList" class="history-list">
+            <div class="history-empty">
+                Loading your activity...
+            </div>
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- ============================================== -->
+<!-- RECIPIENT MODAL -->
+<!-- ============================================== -->
+
+<div
+    id="recipientModal"
+    class="modal-overlay"
+>
+
+
+    <div class="modal">
+
+
+        <h2>
+            Select Recipients
+        </h2>
+
+
+        <input
+            id="recipientSearch"
+            class="search-box"
+            type="text"
+            placeholder="Search employees..."
+            oninput="filterRecipients()"
+        >
+
+
+        <div
+            id="recipientList"
+            class="recipient-list"
+        >
+
+
+            {% for user_id, employee in all_users.items() %}
+
+
+            <label
+                class="recipient-row"
+                data-search="
+                    {{ employee.name|lower }}
+                    {{ employee.role|lower }}
+                    {{ employee.email|lower }}
+                "
+            >
+
+
+                <input
+                    type="checkbox"
+                    class="recipient-checkbox"
+                    value="{{ employee.email }}"
+                    data-name="{{ employee.name }}"
+                >
+
+
+                <div class="recipient-main">
+
+
+                    <div class="recipient-name">
+                        {{ employee.name }}
+                    </div>
+
+
+                    <div class="recipient-info">
+
+                        {{ employee.role }}
+
+                        • Clearance
+                        {{ employee.clearance }}
+
+                        • {{ employee.email }}
+
+                    </div>
+
+
+                </div>
+
+
+            </label>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+        <div class="modal-actions">
+
+
+            <button
+                class="cancel-btn"
+                onclick="closeRecipients()"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="confirm-btn"
+                onclick="confirmRecipients()"
+            >
+                Confirm
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // APPEARANCE
+    // =====================================================
+
+    function resolveThemePreference(
+        preference
+    ) {
+
+        if (
+            preference === "dark"
+            ||
+            preference === "light"
+        ) {
+
+            return preference;
+        }
+
+
+        return window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        ).matches
+            ? "dark"
+            : "light";
+    }
+
+
+    function applyThemePreference(
+        preference
+    ) {
+
+        const safePreference =
+            [
+                "system",
+                "light",
+                "dark"
+            ].includes(
+                preference
+            )
+                ? preference
+                : "system";
+
+
+        document.documentElement.dataset.theme =
+            resolveThemePreference(
+                safePreference
+            );
+
+
+        document.documentElement.dataset.themePreference =
+            safePreference;
+
+
+        const select =
+            document.getElementById(
+                "themeSelect"
+            );
+
+
+        if (select) {
+
+            select.value =
+                safePreference;
+        }
+
+    }
+
+
+    function setThemePreference(
+        preference
+    ) {
+
+        localStorage.setItem(
+            "aegis-theme",
+            preference
+        );
+
+
+        applyThemePreference(
+            preference
+        );
+
+    }
+
+
+    const initialThemePreference =
+        localStorage.getItem(
+            "aegis-theme"
+        )
+        ||
+        "system";
+
+
+    applyThemePreference(
+        initialThemePreference
+    );
+
+
+    const systemThemeQuery =
+        window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        );
+
+
+    systemThemeQuery.addEventListener(
+        "change",
+        () => {
+
+            const preference =
+                localStorage.getItem(
+                    "aegis-theme"
+                )
+                ||
+                "system";
+
+
+            if (
+                preference
+                === "system"
+            ) {
+
+                applyThemePreference(
+                    "system"
+                );
+            }
+
+        }
+    );
+
+
+
+
+
+    let activeSendFile = null;
+
+    let selectedRecipients = [];
+
+    let activeReviewIds = [];
+
+    let reviewStatusTimer = null;
+
+    let employeeHistory = [];
+
+    let historyActionFilter = "ALL";
+
+    let historyDecisionFilter = "ALL";
+
+
+    // =====================================================
+    // REQUEST BUTTONS
+    // =====================================================
+
+    function setRequest(
+        action,
+        fileName
+    ) {
+
+
+        selectedRecipients = [];
+
+        activeSendFile = null;
+
+
+        document
+            .querySelectorAll(
+                ".recipient-checkbox"
+            )
+            .forEach(
+                checkbox => {
+
+                    checkbox.checked =
+                        false;
+
+                }
+            );
+
+
+        renderSelectedRecipients();
+
+
+        document
+            .getElementById(
+                "requestInput"
+            )
+            .value =
+                action
+                +
+                " "
+                +
+                fileName;
+
+
+        hideReviewStatus();
+
+    }
+
+
+    // =====================================================
+    // RECIPIENT MODAL
+    // =====================================================
+
+    function openRecipients(
+        fileName
+    ) {
+
+
+        if (
+            activeSendFile
+            !== fileName
+        ) {
+
+            selectedRecipients = [];
+
+
+            document
+                .querySelectorAll(
+                    ".recipient-checkbox"
+                )
+                .forEach(
+                    checkbox => {
+
+                        checkbox.checked =
+                            false;
+
+                    }
+                );
+
+        }
+
+
+        activeSendFile =
+            fileName;
+
+
+        document
+            .getElementById(
+                "recipientSearch"
+            )
+            .value = "";
+
+
+        filterRecipients();
+
+
+        document
+            .getElementById(
+                "recipientModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeRecipients() {
+
+
+        document
+            .getElementById(
+                "recipientModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    function confirmRecipients() {
+
+
+        const checkboxes =
+            Array.from(
+                document.querySelectorAll(
+                    ".recipient-checkbox:checked"
+                )
+            );
+
+
+        selectedRecipients =
+            checkboxes.map(
+                checkbox => ({
+
+                    email:
+                        checkbox.value,
+
+                    name:
+                        checkbox.dataset.name
+
+                })
+            );
+
+
+        renderSelectedRecipients();
+
+
+        const names =
+            selectedRecipients
+                .map(
+                    item =>
+                        item.name
+                )
+                .join(
+                    ", "
+                );
+
+
+        if (
+            selectedRecipients.length
+            > 0
+        ) {
+
+
+            document
+                .getElementById(
+                    "requestInput"
+                )
+                .value =
+                    "Send "
+                    +
+                    activeSendFile
+                    +
+                    " to "
+                    +
+                    names;
+
+
+        }
+
+        else {
+
+
+            document
+                .getElementById(
+                    "requestInput"
+                )
+                .value =
+                    "Send "
+                    +
+                    activeSendFile;
+
+
+        }
+
+
+        closeRecipients();
+
+    }
+
+
+    function renderSelectedRecipients() {
+
+
+        const container =
+            document
+                .getElementById(
+                    "selectedRecipients"
+                );
+
+
+        const title =
+            document
+                .getElementById(
+                    "selectedRecipientsTitle"
+                );
+
+
+        container.innerHTML =
+            "";
+
+
+        if (
+            selectedRecipients.length
+            === 0
+        ) {
+
+
+            title.style.display =
+                "none";
+
+
+            return;
+
+        }
+
+
+        title.style.display =
+            "block";
+
+
+        selectedRecipients.forEach(
+            (
+                recipient,
+                index
+            ) => {
+
+
+                const chip =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                chip.className =
+                    "recipient-chip";
+
+
+                chip.innerHTML =
+                    safeText(
+                        recipient.name
+                    )
+                    +
+                    `
+                    <button
+                        onclick="
+                            removeRecipient(
+                                ${index}
+                            )
+                        "
+                    >
+                        ×
+                    </button>
+                    `;
+
+
+                container.appendChild(
+                    chip
+                );
+
+
+            }
+        );
+
+    }
+
+
+    function removeRecipient(
+        index
+    ) {
+
+
+        selectedRecipients.splice(
+            index,
+            1
+        );
+
+
+        renderSelectedRecipients();
+
+
+        document
+            .querySelectorAll(
+                ".recipient-checkbox"
+            )
+            .forEach(
+                checkbox => {
+
+
+                    checkbox.checked =
+                        selectedRecipients
+                            .some(
+                                recipient =>
+                                    recipient.email
+                                    === checkbox.value
+                            );
+
+
+                }
+            );
+
+    }
+
+
+    function filterRecipients() {
+
+
+        const query =
+            document
+                .getElementById(
+                    "recipientSearch"
+                )
+                .value
+                .toLowerCase();
+
+
+        document
+            .querySelectorAll(
+                ".recipient-row"
+            )
+            .forEach(
+                row => {
+
+
+                    const haystack =
+                        row.dataset.search
+                        || "";
+
+
+                    row.style.display =
+                        haystack.includes(
+                            query
+                        )
+                            ? "flex"
+                            : "none";
+
+
+                }
+            );
+
+    }
+
+
+    // =====================================================
+    // CLEAR
+    // =====================================================
+
+    function clearRequest() {
+
+
+        document
+            .getElementById(
+                "requestInput"
+            )
+            .value =
+                "";
+
+
+        selectedRecipients =
+            [];
+
+
+        activeSendFile =
+            null;
+
+
+        activeReviewIds =
+            [];
+
+
+        document
+            .querySelectorAll(
+                ".recipient-checkbox"
+            )
+            .forEach(
+                checkbox => {
+
+                    checkbox.checked =
+                        false;
+
+                }
+            );
+
+
+        renderSelectedRecipients();
+
+
+        document
+            .getElementById(
+                "resultBox"
+            )
+            .className =
+                "result";
+
+
+        hideReviewStatus();
+
+    }
+
+
+    // =====================================================
+    // ANALYZE
+    // =====================================================
+
+    async function analyzeRequest() {
+
+
+        const prompt =
+            document
+                .getElementById(
+                    "requestInput"
+                )
+                .value
+                .trim();
+
+
+        if (!prompt) {
+
+
+            alert(
+                "Enter a request first."
+            );
+
+
+            return;
+
+        }
+
+
+        const button =
+            document
+                .getElementById(
+                    "analyzeButton"
+                );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "Analyzing...";
+
+
+        const form =
+            new FormData();
+
+
+        form.append(
+            "prompt",
+            prompt
+        );
+
+
+        form.append(
+            "recipients",
+            JSON.stringify(
+                selectedRecipients.map(
+                    item =>
+                        item.email
+                )
+            )
+        );
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    "/api/analyze",
+                    {
+                        method:
+                            "POST",
+
+                        body:
+                            form
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+
+                alert(
+                    data.error
+                    ||
+                    "Request failed."
+                );
+
+
+                return;
+
+            }
+
+
+            showResult(
+                data
+            );
+
+            loadEmployeeHistory();
+
+
+        }
+
+        catch (error) {
+
+
+            alert(
+                "Could not connect to AegisAI."
+            );
+
+
+        }
+
+        finally {
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "Analyze Request";
+
+
+        }
+
+    }
+
+
+    // =====================================================
+    // RESULT
+    // =====================================================
+
+    function showResult(
+        data
+    ) {
+
+
+        const resultBox =
+            document
+                .getElementById(
+                    "resultBox"
+                );
+
+
+        const decision =
+            String(
+                data.decision
+                || ""
+            ).toUpperCase();
+
+
+        let resultClass =
+            "allow";
+
+
+        if (
+            decision
+            === "BLOCK"
+        ) {
+
+            resultClass =
+                "block";
+
+        }
+
+        else if (
+            decision
+            === "REVIEW"
+        ) {
+
+            resultClass =
+                "review";
+
+        }
+
+
+        resultBox.className =
+            "result show "
+            +
+            resultClass;
+
+
+        const title =
+            document
+                .getElementById(
+                    "resultTitle"
+                );
+
+
+        if (
+            decision
+            === "ALLOW"
+        ) {
+
+            title.textContent =
+                "ALLOW";
+
+        }
+
+        else if (
+            decision
+            === "BLOCK"
+        ) {
+
+            title.textContent =
+                "BLOCK";
+
+        }
+
+        else if (
+            decision
+            === "REVIEW"
+        ) {
+
+            title.textContent =
+                "REVIEW REQUIRED";
+
+        }
+
+        else {
+
+            title.textContent =
+                decision
+                ||
+                "RESULT";
+
+        }
+
+
+        document
+            .getElementById(
+                "resultReason"
+            )
+            .textContent =
+                data.reason
+                ||
+                "";
+
+
+        document
+            .getElementById(
+                "resultAction"
+            )
+            .textContent =
+                data.action
+                ||
+                "-";
+
+
+        document
+            .getElementById(
+                "resultFile"
+            )
+            .textContent =
+                data.file
+                ||
+                "-";
+
+
+        document
+            .getElementById(
+                "resultRisk"
+            )
+            .textContent =
+                (
+                    data.risk_score
+                    ?? "-"
+                )
+                +
+                "/100 • "
+                +
+                (
+                    data.risk_level
+                    ||
+                    "-"
+                );
+
+
+        const recipientContainer =
+            document
+                .getElementById(
+                    "recipientResults"
+                );
+
+
+        recipientContainer.innerHTML =
+            "";
+
+
+        const results =
+            data.recipient_results
+            ||
+            [];
+
+
+        results.forEach(
+            result => {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                let cls =
+                    "allow";
+
+
+                if (
+                    result.decision
+                    === "BLOCK"
+                ) {
+
+                    cls =
+                        "block";
+
+                }
+
+                else if (
+                    result.decision
+                    === "REVIEW"
+                ) {
+
+                    cls =
+                        "review";
+
+                }
+
+
+                card.className =
+                    "recipient-result "
+                    +
+                    cls;
+
+
+                let statusText =
+                    result.decision;
+
+
+                if (
+                    result.decision
+                    === "REVIEW"
+                ) {
+
+                    statusText =
+                        "REVIEW REQUIRED";
+
+                }
+
+
+                card.innerHTML =
+                    `
+
+                    <strong>
+
+                        ${
+                            safeText(
+                                result.name
+                                ||
+                                result.email
+                            )
+                        }
+
+                        —
+
+                        ${
+                            safeText(
+                                statusText
+                            )
+                        }
+
+                    </strong>
+
+                    <br>
+
+                    ${
+                        safeText(
+                            result.email
+                            ||
+                            ""
+                        )
+                    }
+
+                    <br>
+
+                    ${
+                        safeText(
+                            result.reason
+                            ||
+                            ""
+                        )
+                    }
+
+                    `;
+
+
+                recipientContainer
+                    .appendChild(
+                        card
+                    );
+
+
+            }
+        );
+
+
+        // =================================================
+        // REVIEW IDS
+        // =================================================
+
+        activeReviewIds =
+            [];
+
+
+        if (
+            data.review_id
+        ) {
+
+
+            activeReviewIds.push(
+                data.review_id
+            );
+
+
+        }
+
+
+        if (
+            Array.isArray(
+                data.recipient_results
+            )
+        ) {
+
+
+            data.recipient_results.forEach(
+                result => {
+
+
+                    if (
+                        result.review_id
+                    ) {
+
+
+                        activeReviewIds.push(
+                            result.review_id
+                        );
+
+
+                    }
+
+
+                }
+            );
+
+
+        }
+
+
+        if (
+            activeReviewIds.length
+            > 0
+        ) {
+
+
+            showPendingReviewStatus();
+
+
+            startReviewStatusPolling();
+
+
+        }
+
+        else {
+
+
+            hideReviewStatus();
+
+
+        }
+
+    }
+
+
+    // =====================================================
+    // REVIEW STATUS
+    // =====================================================
+
+    function showPendingReviewStatus() {
+
+
+        const box =
+            document
+                .getElementById(
+                    "reviewStatusBox"
+                );
+
+
+        box.style.display =
+            "block";
+
+
+        box.className =
+            "review-status-box";
+
+
+        document
+            .getElementById(
+                "reviewStatusValue"
+            )
+            .textContent =
+                "PENDING";
+
+
+        document
+            .getElementById(
+                "reviewStatusDetails"
+            )
+            .textContent =
+                "Waiting for Security Manager review.";
+
+    }
+
+
+    function hideReviewStatus() {
+
+
+        document
+            .getElementById(
+                "reviewStatusBox"
+            )
+            .style.display =
+                "none";
+
+
+        if (
+            reviewStatusTimer
+        ) {
+
+
+            clearInterval(
+                reviewStatusTimer
+            );
+
+
+            reviewStatusTimer =
+                null;
+
+
+        }
+
+    }
+
+
+    function startReviewStatusPolling() {
+
+
+        if (
+            reviewStatusTimer
+        ) {
+
+
+            clearInterval(
+                reviewStatusTimer
+            );
+
+
+        }
+
+
+        checkReviewStatuses();
+
+
+        reviewStatusTimer =
+            setInterval(
+                checkReviewStatuses,
+                5000
+            );
+
+    }
+
+
+    async function checkReviewStatuses() {
+
+
+        if (
+            activeReviewIds.length
+            === 0
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+
+            const statuses =
+                [];
+
+
+            for (
+                const reviewId
+                of activeReviewIds
+            ) {
+
+
+                const response =
+                    await fetch(
+                        "/api/review-status/"
+                        +
+                        reviewId
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    continue;
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                statuses.push(
+                    data
+                );
+
+
+            }
+
+
+            if (
+                statuses.length
+                === 0
+            ) {
+
+                return;
+
+            }
+
+
+            updateReviewStatusUI(
+                statuses
+            );
+
+
+        }
+
+        catch (error) {
+
+
+            console.log(
+                "Review status check failed:",
+                error
+            );
+
+
+        }
+
+    }
+
+
+    function updateReviewStatusUI(
+        statuses
+    ) {
+
+
+        const box =
+            document
+                .getElementById(
+                    "reviewStatusBox"
+                );
+
+
+        const value =
+            document
+                .getElementById(
+                    "reviewStatusValue"
+                );
+
+
+        const details =
+            document
+                .getElementById(
+                    "reviewStatusDetails"
+                );
+
+
+        const hasDenied =
+            statuses.some(
+                item =>
+                    item.status
+                    === "DENIED"
+            );
+
+
+        const allApproved =
+            statuses.every(
+                item =>
+                    item.status
+                    === "APPROVED"
+            );
+
+
+        const hasPending =
+            statuses.some(
+                item =>
+                    item.status
+                    === "PENDING"
+            );
+
+
+        // =================================================
+        // DENIED
+        // =================================================
+
+        if (
+            hasDenied
+        ) {
+
+
+            box.className =
+                "review-status-box denied";
+
+
+            value.textContent =
+                "DENIED";
+
+
+            const deniedReview =
+                statuses.find(
+                    item =>
+                        item.status
+                        === "DENIED"
+                );
+
+
+            let message =
+                "Request denied";
+
+
+            if (
+                deniedReview.reviewed_by
+            ) {
+
+
+                message +=
+                    " by "
+                    +
+                    deniedReview.reviewed_by;
+
+
+            }
+
+
+            if (
+                deniedReview.reviewer_reason
+            ) {
+
+
+                message +=
+                    ". Reason: "
+                    +
+                    deniedReview.reviewer_reason;
+
+
+            }
+
+
+            details.textContent =
+                message;
+
+
+            clearInterval(
+                reviewStatusTimer
+            );
+
+
+            reviewStatusTimer =
+                null;
+
+
+            return;
+
+        }
+
+
+        // =================================================
+        // APPROVED
+        // =================================================
+
+        if (
+            allApproved
+        ) {
+
+
+            box.className =
+                "review-status-box approved";
+
+
+            value.textContent =
+                "APPROVED";
+
+
+            const approvedReview =
+                statuses[0];
+
+
+            let message =
+                "Security review approved";
+
+
+            if (
+                approvedReview.reviewed_by
+            ) {
+
+
+                message +=
+                    " by "
+                    +
+                    approvedReview.reviewed_by;
+
+
+            }
+
+
+            if (
+                approvedReview.reviewer_reason
+            ) {
+
+
+                message +=
+                    ". Note: "
+                    +
+                    approvedReview.reviewer_reason;
+
+
+            }
+
+
+            details.textContent =
+                message;
+
+
+            clearInterval(
+                reviewStatusTimer
+            );
+
+
+            reviewStatusTimer =
+                null;
+
+
+            return;
+
+        }
+
+
+        // =================================================
+        // PENDING
+        // =================================================
+
+        if (
+            hasPending
+        ) {
+
+
+            box.className =
+                "review-status-box";
+
+
+            value.textContent =
+                "PENDING";
+
+
+            details.textContent =
+                "Waiting for Security Manager review.";
+
+
+        }
+
+    }
+
+
+    // =====================================================
+    // EMPLOYEE HISTORY
+    // =====================================================
+
+    async function loadEmployeeHistory() {
+
+        const list =
+            document.getElementById(
+                "historyList"
+            );
+
+        const count =
+            document.getElementById(
+                "historyCount"
+            );
+
+        if (!list || !count) {
+            return;
+        }
+
+        count.textContent =
+            "Loading history...";
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/employee/history"
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error
+                    ||
+                    "Could not load history."
+                );
+            }
+
+            employeeHistory =
+                Array.isArray(data.history)
+                ? data.history
+                : [];
+
+            renderEmployeeHistory();
+
+        }
+
+        catch (error) {
+
+            count.textContent =
+                "History unavailable";
+
+            list.innerHTML =
+                `
+                <div class="history-empty">
+                    ${safeText(error.message || "Could not load history.")}
+                </div>
+                `;
+        }
+    }
+
+
+    function setHistoryFilter(
+        type,
+        value,
+        button
+    ) {
+
+        const normalized =
+            String(value || "ALL")
+                .toUpperCase();
+
+        if (type === "action") {
+
+            historyActionFilter =
+                normalized;
+
+            document
+                .querySelectorAll(
+                    "#actionFilters .filter-btn"
+                )
+                .forEach(
+                    item =>
+                        item.classList.remove(
+                            "active"
+                        )
+                );
+        }
+
+        else {
+
+            historyDecisionFilter =
+                normalized;
+
+            document
+                .querySelectorAll(
+                    "#decisionFilters .filter-btn"
+                )
+                .forEach(
+                    item =>
+                        item.classList.remove(
+                            "active"
+                        )
+                );
+        }
+
+        if (button) {
+            button.classList.add(
+                "active"
+            );
+        }
+
+        renderEmployeeHistory();
+    }
+
+
+    function renderEmployeeHistory() {
+
+        const list =
+            document.getElementById(
+                "historyList"
+            );
+
+        const count =
+            document.getElementById(
+                "historyCount"
+            );
+
+        if (!list || !count) {
+            return;
+        }
+
+        const filtered =
+            employeeHistory.filter(
+                item => {
+
+                    const action =
+                        String(
+                            item.action
+                            ||
+                            ""
+                        ).toUpperCase();
+
+                    const decision =
+                        String(
+                            item.decision
+                            ||
+                            ""
+                        ).toUpperCase();
+
+                    const actionMatch =
+                        historyActionFilter
+                        === "ALL"
+                        ||
+                        action
+                        === historyActionFilter;
+
+                    const decisionMatch =
+                        historyDecisionFilter
+                        === "ALL"
+                        ||
+                        decision
+                        === historyDecisionFilter;
+
+                    return (
+                        actionMatch
+                        &&
+                        decisionMatch
+                    );
+                }
+            );
+
+        count.textContent =
+            filtered.length
+            +
+            (
+                filtered.length === 1
+                ? " event"
+                : " events"
+            );
+
+        list.innerHTML = "";
+
+        if (filtered.length === 0) {
+
+            list.innerHTML =
+                `
+                <div class="history-empty">
+                    No activity matches these filters.
+                </div>
+                `;
+
+            return;
+        }
+
+        filtered.forEach(
+            item => {
+
+                const decision =
+                    String(
+                        item.decision
+                        ||
+                        "UNKNOWN"
+                    ).toUpperCase();
+
+                const decisionClass =
+                    decision === "BLOCK"
+                    ? "block"
+                    : decision === "REVIEW"
+                    ? "review"
+                    : "allow";
+
+                const action =
+                    String(
+                        item.action
+                        ||
+                        "-"
+                    ).toUpperCase();
+
+                const fileName =
+                    item.file
+                    ||
+                    "No file resolved";
+
+                const riskText =
+                    (
+                        item.risk_score
+                        ??
+                        "-"
+                    )
+                    +
+                    "/100 • "
+                    +
+                    (
+                        item.risk_level
+                        ||
+                        "-"
+                    );
+
+                const recipient =
+                    item.recipient
+                    ||
+                    "-";
+
+                const timeText =
+                    formatHistoryTime(
+                        item.timestamp
+                    );
+
+                let reviewHtml = "";
+
+                if (decision === "REVIEW") {
+
+                    const reviewStatus =
+                        String(
+                            item.review_status
+                            ||
+                            "PENDING"
+                        ).toUpperCase();
+
+                    const reviewClass =
+                        reviewStatus === "APPROVED"
+                        ? "approved"
+                        : reviewStatus === "DENIED"
+                        ? "denied"
+                        : "pending";
+
+                    let reviewDetails =
+                        `
+                        <span class="history-badge ${reviewClass}">
+                            Review Status: ${safeText(reviewStatus)}
+                        </span>
+                        `;
+
+                    let reviewNote = "";
+
+                    if (item.reviewed_by) {
+                        reviewNote +=
+                            "Reviewed by "
+                            +
+                            item.reviewed_by;
+                    }
+
+                    if (item.reviewer_reason) {
+
+                        if (reviewNote) {
+                            reviewNote += ". ";
+                        }
+
+                        reviewNote +=
+                            "Reason: "
+                            +
+                            item.reviewer_reason;
+                    }
+
+                    reviewHtml =
+                        reviewDetails
+                        +
+                        (
+                            reviewNote
+                            ? `
+                              <div class="history-review-note">
+                                  ${safeText(reviewNote)}
+                              </div>
+                              `
+                            : ""
+                        );
+                }
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "history-card "
+                    +
+                    decisionClass;
+
+                card.innerHTML =
+                    `
+                    <div class="history-top">
+                        <div class="history-main">
+                            <div class="history-action">
+                                ${safeText(action)}
+                            </div>
+                            <div class="history-file">
+                                ${safeText(fileName)}
+                            </div>
+                        </div>
+                        <div class="history-time">
+                            ${safeText(timeText)}
+                        </div>
+                    </div>
+
+                    <div class="history-badges">
+                        <span class="history-badge ${decisionClass}">
+                            Decision: ${safeText(decision)}
+                        </span>
+                        <span class="history-badge">
+                            Risk: ${safeText(riskText)}
+                        </span>
+                        ${reviewHtml}
+                    </div>
+
+                    <div class="history-details">
+                        <div class="history-detail">
+                            <span>Request</span>
+                            <strong>${safeText(item.request || "-")}</strong>
+                        </div>
+
+                        <div class="history-detail">
+                            <span>Recipient</span>
+                            <strong>${safeText(recipient)}</strong>
+                        </div>
+                    </div>
+
+                    <div class="history-reason">
+                        <strong>Reason:</strong>
+                        ${safeText(item.reason || "-")}
+                    </div>
+                    `;
+
+                list.appendChild(
+                    card
+                );
+            }
+        );
+    }
+
+
+    function formatHistoryTime(
+        timestamp
+    ) {
+
+        if (!timestamp) {
+            return "-";
+        }
+
+        const date =
+            new Date(timestamp);
+
+        if (Number.isNaN(date.getTime())) {
+            return timestamp;
+        }
+
+        return date.toLocaleString(
+            "en-US",
+            {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            }
+        ).replace(",", " •");
+    }
+
+
+    // =====================================================
+    // SAFE TEXT
+    // =====================================================
+
+    function safeText(
+        value
+    ) {
+
+
+        return String(
+            value
+            ?? ""
+        )
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    loadEmployeeHistory();
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>AegisAI Login</title>
+
+
+    <script>
+        (function () {
+            const savedTheme =
+                localStorage.getItem("aegis-theme")
+                || "system";
+
+            const systemDark =
+                window.matchMedia
+                && window.matchMedia(
+                    "(prefers-color-scheme: dark)"
+                ).matches;
+
+            const resolvedTheme =
+                savedTheme === "system"
+                    ? (systemDark ? "dark" : "light")
+                    : savedTheme;
+
+            document.documentElement.dataset.theme =
+                resolvedTheme;
+
+            document.documentElement.dataset.themePreference =
+                savedTheme;
+        })();
+    </script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5f9ff,
+            #eef4fa
+        );
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #14213d;
+}
+
+.container {
+
+    width: 100%;
+    max-width: 430px;
+
+    padding: 20px;
+}
+
+.logo {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+.logo-icon {
+
+    width: 70px;
+    height: 70px;
+
+    margin: auto;
+
+    background: #0b5cff;
+
+    color: white;
+
+    border-radius: 22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+
+    box-shadow:
+        0 12px 30px
+        rgba(11,92,255,.25);
+
+    margin-bottom: 15px;
+}
+
+.logo h1 {
+
+    margin: 0;
+
+    font-size: 30px;
+}
+
+.logo p {
+
+    margin-top: 6px;
+
+    color: #738096;
+}
+
+.card {
+
+    background:
+        rgba(255,255,255,.88);
+
+    backdrop-filter:
+        blur(25px);
+
+    border-radius: 28px;
+
+    padding: 26px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(20,33,61,.10);
+
+    border:
+        1px solid
+        rgba(255,255,255,.9);
+}
+
+.tabs {
+
+    display: flex;
+
+    background: #edf1f6;
+
+    padding: 4px;
+
+    border-radius: 14px;
+
+    margin-bottom: 25px;
+}
+
+.tab {
+
+    flex: 1;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 11px;
+
+    border-radius: 11px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    color: #687386;
+
+    transition: .25s;
+}
+
+.tab.active {
+
+    background: white;
+
+    color: #0b5cff;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0,0,0,.08);
+}
+
+.login-panel {
+
+    display: none;
+}
+
+.login-panel.active {
+
+    display: block;
+}
+
+h2 {
+
+    margin-bottom: 5px;
+}
+
+.description {
+
+    color: #7b8798;
+
+    margin-top: 0;
+
+    margin-bottom: 22px;
+
+    font-size: 14px;
+}
+
+label {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+input {
+
+    width: 100%;
+
+    border: 1px solid #dce4ee;
+
+    background: #f9fbfd;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition: .2s;
+
+    margin-bottom: 15px;
+}
+
+input:focus {
+
+    border-color: #0b5cff;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(11,92,255,.09);
+}
+
+.login-button {
+
+    width: 100%;
+
+    border: none;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    background: #0b5cff;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.login-button:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(11,92,255,.23);
+}
+
+.manager-button {
+
+    background: #17233c;
+}
+
+.error {
+
+    background: #fff0f0;
+
+    color: #c62828;
+
+    border: 1px solid #ffd3d3;
+
+    padding: 12px;
+
+    border-radius: 13px;
+
+    margin-bottom: 18px;
+
+    font-size: 14px;
+}
+
+.demo {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: 12px;
+
+    color: #9aa4b1;
+}
+
+
+/* ================================================= */
+/* APPEARANCE                                        */
+/* ================================================= */
+
+.appearance-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.theme-select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #dce4ee;
+    background-color: rgba(255,255,255,.9);
+    color: #14213d;
+    padding: 10px 34px 10px 13px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #7d89a1 50%),
+        linear-gradient(135deg, #7d89a1 50%, transparent 50%);
+    background-position:
+        calc(100% - 17px) 50%,
+        calc(100% - 12px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+    background:
+        linear-gradient(
+            135deg,
+            #0d1117,
+            #121a27
+        );
+    color: #f4f7fb;
+}
+
+html[data-theme="dark"] .logo p,
+html[data-theme="dark"] .description,
+html[data-theme="dark"] .demo {
+    color: #9eaabc;
+}
+
+html[data-theme="dark"] .card {
+    background: rgba(21,27,36,.9);
+    border-color: rgba(255,255,255,.06);
+    box-shadow: 0 20px 60px rgba(0,0,0,.28);
+}
+
+html[data-theme="dark"] .tabs {
+    background: #0f1520;
+}
+
+html[data-theme="dark"] .tab {
+    color: #9eaabc;
+}
+
+html[data-theme="dark"] .tab.active {
+    background: #202938;
+    color: #6f9cff;
+    box-shadow: 0 3px 10px rgba(0,0,0,.28);
+}
+
+html[data-theme="dark"] input {
+    background: #111722;
+    color: #f4f7fb;
+    border-color: #2a3546;
+}
+
+html[data-theme="dark"] input:focus {
+    background: #111722;
+    border-color: #3f7cff;
+}
+
+html[data-theme="dark"] input::placeholder {
+    color: #7f8ba0;
+}
+
+html[data-theme="dark"] .manager-button {
+    background: #202938;
+}
+
+html[data-theme="dark"] .error {
+    background: #351d22;
+    border-color: #71323c;
+    color: #ff8e98;
+}
+
+html[data-theme="dark"] .theme-select {
+    background-color: #151b24;
+    color: #f4f7fb;
+    border-color: #2a3546;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<div class="logo">
+
+    <div class="logo-icon">
+        A
+    </div>
+
+    <h1>
+        AegisAI
+    </h1>
+
+    <p>
+        AI Agent Security Gateway
+    </p>
+
+</div>
+
+
+
+<div class="card">
+
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="showEmployee()"
+            id="employeeTab"
+        >
+            Employee
+        </button>
+
+
+        <button
+            class="tab"
+            onclick="showManager()"
+            id="managerTab"
+        >
+            Security Manager
+        </button>
+
+    </div>
+
+
+
+    {% if error %}
+
+    <div class="error">
+
+        {{ error }}
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- EMPLOYEE LOGIN -->
+
+    <div
+        class="login-panel active"
+        id="employeePanel"
+    >
+
+        <h2>
+            Welcome back
+        </h2>
+
+        <p class="description">
+
+            Sign in using your employee name.
+
+        </p>
+
+
+        <form
+            action="/login/employee"
+            method="POST"
+        >
+
+            <label>
+                Employee Name
+            </label>
+
+
+            <input
+                type="text"
+                name="name"
+                placeholder=""
+                autocomplete="off"
+                required
+            >
+
+
+            <button
+                class="login-button"
+                type="submit"
+            >
+
+                Sign In
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- MANAGER LOGIN -->
+
+    <div
+        class="login-panel"
+        id="managerPanel"
+    >
+
+        <h2>
+            Security Administration
+        </h2>
+
+
+        <p class="description">
+
+            Access the AegisAI security console.
+
+        </p>
+
+
+        <form
+            action="/login/manager"
+            method="POST"
+        >
+
+            <label>
+                Manager Name
+            </label>
+
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Manager account"
+                autocomplete="off"
+                required
+            >
+
+
+            <button
+                class="login-button manager-button"
+                type="submit"
+            >
+
+                Open Security Console
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+</div>
+
+
+<div class="appearance-row">
+
+    <select
+        id="themeSelect"
+        class="theme-select"
+        aria-label="Appearance"
+        onchange="setThemePreference(this.value)"
+    >
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+    </select>
+
+</div>
+
+
+<div class="demo">
+
+    AegisAI Prototype Environment
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+    // =====================================================
+    // APPEARANCE
+    // =====================================================
+
+    function resolveThemePreference(preference) {
+        if (
+            preference === "dark"
+            ||
+            preference === "light"
+        ) {
+            return preference;
+        }
+
+        return window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        ).matches
+            ? "dark"
+            : "light";
+    }
+
+    function applyThemePreference(preference) {
+        const safePreference =
+            ["system", "light", "dark"].includes(preference)
+                ? preference
+                : "system";
+
+        document.documentElement.dataset.theme =
+            resolveThemePreference(safePreference);
+
+        document.documentElement.dataset.themePreference =
+            safePreference;
+
+        const select =
+            document.getElementById("themeSelect");
+
+        if (select) {
+            select.value = safePreference;
+        }
+    }
+
+    function setThemePreference(preference) {
+        localStorage.setItem(
+            "aegis-theme",
+            preference
+        );
+
+        applyThemePreference(preference);
+    }
+
+    const initialThemePreference =
+        localStorage.getItem("aegis-theme")
+        || "system";
+
+    applyThemePreference(
+        initialThemePreference
+    );
+
+    const systemThemeQuery =
+        window.matchMedia(
+            "(prefers-color-scheme: dark)"
+        );
+
+    systemThemeQuery.addEventListener(
+        "change",
+        () => {
+            const preference =
+                localStorage.getItem("aegis-theme")
+                || "system";
+
+            if (preference === "system") {
+                applyThemePreference("system");
+            }
+        }
+    );
+
+
+
+function showEmployee() {
+
+    document
+        .getElementById("employeePanel")
+        .classList.add("active");
+
+    document
+        .getElementById("managerPanel")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("employeeTab")
+        .classList.add("active");
+
+    document
+        .getElementById("managerTab")
+        .classList.remove("active");
+
+}
+
+
+function showManager() {
+
+    document
+        .getElementById("managerPanel")
+        .classList.add("active");
+
+    document
+        .getElementById("employeePanel")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("managerTab")
+        .classList.add("active");
+
+    document
+        .getElementById("employeeTab")
+        .classList.remove("active");
+
+}
+
+</script>
+
+
+</body>
+
+</html>
